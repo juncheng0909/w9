@@ -1,0 +1,40 @@
+{
+  "slug": "new-topic",
+  "title": "新主題（保留英文名詞）",
+  "subtitle": "一句話說明核心直覺。",
+  "category": "資料結構",
+  "level": "入門",
+  "minutes": 5,
+  "number": "04",
+  "keywords": [
+    "中文關鍵字",
+    "English keyword"
+  ],
+  "summary": "以一到兩句說明讀者將學會什麼。",
+  "prerequisites": "讀者應具備的先備知識。",
+  "sections": [
+    {
+      "id": "idea",
+      "title": "核心概念",
+      "html": "<p>填入精確定義與生活類比。</p>"
+    },
+    {
+      "id": "example",
+      "title": "完整範例",
+      "html": "<p>逐步解釋範例的輸入、過程與輸出。</p>",
+      "code": "// 如有程式，放在這裡；無程式則刪除此欄位。",
+      "language": "JavaScript"
+    },
+    {
+      "id": "pitfalls",
+      "title": "效率與常見誤區",
+      "html": "<p>寫出限制、邊界情況與適用前提。</p>"
+    },
+    {
+      "id": "practice",
+      "title": "練習與回顧",
+      "html": "<p>填入可自行回答的練習。</p><details><summary>查看解答</summary><p>填入解答與理由。</p></details><p class=\"takeaway\">記住一件事：寫出本篇最重要的觀念。</p>"
+    }
+  ],
+  "glyph": "◇"
+}

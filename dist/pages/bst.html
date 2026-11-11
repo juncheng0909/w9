@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="掌握左小右大的規則，理解搜尋、插入、中序走訪，以及樹高如何影響效率。"><meta name="theme-color" content="#173947"><title>BST 二元搜尋樹 | CS Learning Hub</title><link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../assets/css/style.css"><script type="module" src="../assets/js/main.js"></script></head>
+<body><a class="skip" href="#main">跳到主要內容</a><header class="site-header"><div class="header-inner"><a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">cs<span>_</span></span><span>CS Learning Hub<small>我的資工學習知識庫</small></span></a><nav aria-label="主要導覽"><a href="../index.html" >知識首頁</a><a href="../index.html#topics">探索主題 <span aria-hidden="true">↗</span></a></nav></div></header><main id="main" class="article-layout"><aside class="sidebar"><a class="back-link" href="../index.html#topics">← 所有學習筆記</a><p class="eyebrow">學習主題</p><nav aria-label="文章導覽"><a href="stack.html" ><span>01</span>Stack 堆疊</a><a href="bst.html" aria-current="page"><span>02</span>BST 二元搜尋樹</a><a href="proof-by-contradiction.html" ><span>03</span>Proof by Contradiction 反證法</a></nav><div class="sidebar-note">慢慢來，理解比速度重要。</div></aside><article class="article"><header class="article-header"><p class="eyebrow">LEARNING NOTE / 02</p><div class="article-meta"><span class="tag">資料結構</span><span>基礎 · 約 8 分鐘</span></div><h1>BST 二元搜尋樹</h1><p class="article-subtitle">每一次比較，都縮小搜尋範圍。</p><p class="prerequisites"><strong>開始之前</strong> 認識節點、比較運算與遞迴。</p></header><nav class="toc" aria-label="本篇目錄"><strong>本篇路線</strong><a href="#idea">01 核心概念</a><a href="#search">02 搜尋與插入</a><a href="#traversal">03 中序走訪</a><a href="#cost">04 效率與常見誤區</a><a href="#practice">05 練習與回顧</a></nav><section class="article-section" id="idea"><h2><span>01</span>核心概念</h2><p>二元搜尋樹（Binary Search Tree，BST）的每個節點最多有兩個子節點。在本篇<strong>不儲存重複鍵值</strong>的約定下，左子樹所有鍵值都小於該節點，右子樹所有鍵值都大於該節點。每棵子樹也必須滿足同樣規則。</p><pre class="tree" aria-label="根為 8，左子節點為 3，右子節點為 10；3 的子節點為 1 和 6，10 的右子節點為 14">       8
+     /   \
+    3     10
+   / \      \
+  1   6      14</pre><p>只有「左孩子比父節點小」還不夠。例如把 9 放在 3 的右邊，雖然 9 大於 3，卻違反整棵左子樹都必須小於根節點 8 的規則。</p></section><section class="article-section" id="search"><h2><span>02</span>搜尋與插入</h2><p>搜尋 6：先與 8 比較，往左；與 3 比較，往右；找到 6。若走到空節點仍未找到，表示鍵值不存在。插入也沿相同比較路徑走到空位置；遇到相同鍵值，本例直接保留原樹。</p><div class="code-label">JavaScript</div><pre class="code-block"><code>function insert(root, key) {
+  if (root === null) return { key, left: null, right: null };
+  if (key &lt; root.key) root.left = insert(root.left, key);
+  else if (key &gt; root.key) root.right = insert(root.right, key);
+  return root;
+}
+function contains(root, key) {
+  while (root !== null) {
+    if (key === root.key) return true;
+    root = key &lt; root.key ? root.left : root.right;
+  }
+  return false;
+}
+let root = null;
+for (const key of [8, 3, 10, 1, 6, 14]) root = insert(root, key);
+console.log(contains(root, 6)); // true
+console.log(contains(root, 9)); // false</code></pre></section><section class="article-section" id="traversal"><h2><span>03</span>中序走訪</h2><p>依序走訪「左子樹 → 節點 → 右子樹」，就能取得遞增序列。上面的樹會輸出 1、3、6、8、10、14。</p><div class="code-label">JavaScript</div><pre class="code-block"><code>function inorder(root, result = []) {
+  if (root === null) return result;
+  inorder(root.left, result);
+  result.push(root.key);
+  inorder(root.right, result);
+  return result;
+}
+console.log(inorder(root)); // [1, 3, 6, 8, 10, 14]</code></pre></section><section class="article-section" id="cost"><h2><span>04</span>效率與常見誤區</h2><p>搜尋與插入的時間皆為 O(h)，h 是樹高。若樹維持平衡，樹高為 O(log n)；一般 BST 並不自動保證平衡。依序插入 1、2、3、4，會形成向右延伸的鏈，最壞時間為 O(n)。</p><p>中序走訪時間 O(n)，上述遞迴版本的額外空間為 O(h)，不含輸出陣列。遞迴插入同樣使用 O(h) 呼叫堆疊；極深的樹可能超出 JavaScript 呼叫深度。</p><ul><li>BST 不等於二元搜尋：前者是資料結構，後者常指對排序陣列的搜尋演算法。</li><li>需要保證效率時，可考慮 AVL 樹或紅黑樹等平衡搜尋樹。</li></ul></section><section class="article-section" id="practice"><h2><span>05</span>練習與回顧</h2><p>將 7 插入範例中的 BST，會放在哪裡？中序走訪又會如何改變？</p><details><summary>查看解答</summary><p>7 小於 8、大於 3、大於 6，因此成為 6 的右子節點。中序結果是 1、3、6、7、8、10、14。</p></details><p class="takeaway">記住一件事：效率取決於樹高，左小右大的限制涵蓋整棵子樹。</p></section><nav class="article-pagination" aria-label="前後篇文章"><a href="stack.html"><small>← 上一篇</small>Stack 堆疊</a><a href="proof-by-contradiction.html"><small>下一篇 →</small>Proof by Contradiction 反證法</a></nav></article></main><footer class="site-footer"><div><a class="footer-brand" href="../index.html">CS Learning Hub<span aria-hidden="true">_</span></a><p>理解一個概念，連結更多可能。</p></div><p>繁體中文資工筆記 · 以規則延續學習<br><span>生成式 AI 第九週作業 / 2026</span></p></footer></body></html>

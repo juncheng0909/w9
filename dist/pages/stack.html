@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="從一疊盤子理解 LIFO，再用 JavaScript 實作堆疊與括號配對。"><meta name="theme-color" content="#173947"><title>Stack 堆疊 | CS Learning Hub</title><link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../assets/css/style.css"><script type="module" src="../assets/js/main.js"></script></head>
+<body><a class="skip" href="#main">跳到主要內容</a><header class="site-header"><div class="header-inner"><a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">cs<span>_</span></span><span>CS Learning Hub<small>我的資工學習知識庫</small></span></a><nav aria-label="主要導覽"><a href="../index.html" >知識首頁</a><a href="../index.html#topics">探索主題 <span aria-hidden="true">↗</span></a></nav></div></header><main id="main" class="article-layout"><aside class="sidebar"><a class="back-link" href="../index.html#topics">← 所有學習筆記</a><p class="eyebrow">學習主題</p><nav aria-label="文章導覽"><a href="stack.html" aria-current="page"><span>01</span>Stack 堆疊</a><a href="bst.html" ><span>02</span>BST 二元搜尋樹</a><a href="proof-by-contradiction.html" ><span>03</span>Proof by Contradiction 反證法</a></nav><div class="sidebar-note">慢慢來，理解比速度重要。</div></aside><article class="article"><header class="article-header"><p class="eyebrow">LEARNING NOTE / 01</p><div class="article-meta"><span class="tag">資料結構</span><span>入門 · 約 6 分鐘</span></div><h1>Stack 堆疊</h1><p class="article-subtitle">最後進來的，最先離開。</p><p class="prerequisites"><strong>開始之前</strong> 認識陣列、函式與基本迴圈。</p></header><nav class="toc" aria-label="本篇目錄"><strong>本篇路線</strong><a href="#idea">01 核心概念</a><a href="#implementation">02 動手實作</a><a href="#application">03 應用：括號配對</a><a href="#cost">04 效率與常見誤區</a><a href="#practice">05 練習與回顧</a></nav><section class="article-section" id="idea"><h2><span>01</span>核心概念</h2><p>Stack（堆疊）是遵循<strong>後進先出（Last In, First Out，LIFO）</strong>的資料結構。想像桌上的一疊盤子：新盤子放在最上方，取盤子時也先取最上方。</p><p><code>push</code> 將元素加入頂端；<code>pop</code> 移除並回傳頂端元素；<code>peek</code> 只查看頂端，不移除元素。</p><div class="diagram" aria-label="依序放入 A、B、C，取出順序為 C、B、A"><span>放入 A → B → C</span><strong>頂端 [ C ]</strong><span>[ B ]</span><span>底部 [ A ]</span><strong>取出 C → B → A</strong></div></section><section class="article-section" id="implementation"><h2><span>02</span>動手實作</h2><p>這個版本使用 JavaScript 陣列儲存資料。空堆疊的 <code>pop()</code> 與 <code>peek()</code> 會回傳 <code>undefined</code>；實務上也可選擇丟出例外，但必須明確定義介面。</p><div class="code-label">JavaScript</div><pre class="code-block"><code>class Stack {
+  #items = [];
+  push(value) { this.#items.push(value); }
+  pop() { return this.#items.pop(); }
+  peek() { return this.#items.at(-1); }
+  get size() { return this.#items.length; }
+}
+const stack = new Stack();
+stack.push(&#39;A&#39;);
+stack.push(&#39;B&#39;);
+console.log(stack.pop()); // B
+console.log(stack.peek()); // A</code></pre></section><section class="article-section" id="application"><h2><span>03</span>應用：括號配對</h2><p>由左至右掃描字串。遇到左括號就推入堆疊；遇到右括號就取出頂端，檢查種類是否對應。掃描完後，堆疊必須為空。</p><div class="code-label">JavaScript</div><pre class="code-block"><code>function isBalanced(text) {
+  const stack = [];
+  const pairs = { &#39;)&#39;: &#39;(&#39;, &#39;]&#39;: &#39;[&#39;, &#39;}&#39;: &#39;{&#39; };
+  for (const char of text) {
+    if (&#39;([{&#39;.includes(char)) stack.push(char);
+    else if (Object.hasOwn(pairs, char)) {
+      if (stack.pop() !== pairs[char]) return false;
+    }
+  }
+  return stack.length === 0;
+}
+console.log(isBalanced(&#39;([])&#39;)); // true
+console.log(isBalanced(&#39;([)]&#39;)); // false</code></pre></section><section class="article-section" id="cost"><h2><span>04</span>效率與常見誤區</h2><p>在此陣列模型下，push 為攤銷 O(1)，pop 與 peek 為 O(1)。括號配對需掃描 n 個字元，時間 O(n)，最壞額外空間 O(n)。</p><ul><li>Stack 是 LIFO；Queue（佇列）則是 FIFO，兩者不可混淆。</li><li>只計算左右括號數量不夠：<code>([)]</code> 數量正確，順序卻錯誤。</li><li>本例忽略非括號字元；它不是能處理引號或註解的程式語言解析器。</li></ul></section><section class="article-section" id="practice"><h2><span>05</span>練習與回顧</h2><p>依序 push 10、push 20、pop、push 30，最後頂端是什麼？堆疊由底到頂有哪些元素？</p><details><summary>查看解答</summary><p>頂端是 30；由底到頂為 10、30。pop 已移除 20。</p></details><p class="takeaway">記住一件事：新增與取出都從同一端進行。</p></section><nav class="article-pagination" aria-label="前後篇文章"><a href="../index.html#topics"><small>← 探索更多</small>返回主題列表</a><a href="bst.html"><small>下一篇 →</small>BST 二元搜尋樹</a></nav></article></main><footer class="site-footer"><div><a class="footer-brand" href="../index.html">CS Learning Hub<span aria-hidden="true">_</span></a><p>理解一個概念，連結更多可能。</p></div><p>繁體中文資工筆記 · 以規則延續學習<br><span>生成式 AI 第九週作業 / 2026</span></p></footer></body></html>
