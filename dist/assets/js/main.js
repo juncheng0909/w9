@@ -1,6 +1,6 @@
-import { matchesArticle } from './search.mjs';
+import { matchesArticle } from './search.mjs?v=7d4520bab7';
 
-const input = document.querySelector('#search');
+const input = document.querySelector('input#search');
 if (input) {
   const cards = [...document.querySelectorAll('.topic-card')];
   const buttons = [...document.querySelectorAll('[data-filter]')];

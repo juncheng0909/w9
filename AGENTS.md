@@ -8,6 +8,7 @@
 - `templates/article-template.json`：新增文章用的單篇物件範本，不會自動公開。
 - `scripts/build.mjs`：產生共用導覽、首頁、目錄、前後篇與文章 HTML。
 - `assets/css/style.css`：全站設計；`assets/js/`：首頁搜尋與篩選。
+- 建置時為 CSS、主程式與匯入的搜尋模組加入內容雜湊版本，讓更新後的正式站載入最新檔案。首頁搜尋初始化必須選取 `input#search`，避免文章的同名章節觸發首頁程式。
 - `dist/`：可直接部署的產物，已納入交付；不可手動修改。變更來源後重新 build，建置會先清除舊產物，避免殘留已移除文章。
 - `tests/`：內容完整性、內部連結、搜尋及文章程式範例測試。
 - `docs/`：部署、測試紀錄與繳交範本；`.github/workflows/`：持續檢查。

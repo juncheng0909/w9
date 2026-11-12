@@ -6,6 +6,9 @@ import { createHash } from 'node:crypto';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const out = path.join(root, 'dist');
 const styleVersion = createHash('sha256').update(await readFile(path.join(root, 'assets/css/style.css'))).digest('hex').slice(0,10);
+const searchVersion = createHash('sha256').update(await readFile(path.join(root, 'assets/js/search.mjs'))).digest('hex').slice(0,10);
+const mainSource = (await readFile(path.join(root, 'assets/js/main.js'),'utf8')).replace("from './search.mjs'", `from './search.mjs?v=${searchVersion}'`);
+const mainVersion = createHash('sha256').update(mainSource).digest('hex').slice(0,10);
 export const escape = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const articles = JSON.parse(await readFile(path.join(root, 'content/articles.json'), 'utf8'));
 if (!articles.length || new Set(articles.map(a => a.slug)).size !== articles.length) throw Error('文章 slug 必須唯一且至少一篇');
@@ -23,11 +26,12 @@ if (path.relative(path.resolve(root), path.resolve(out)) !== 'dist') throw Error
 await rm(out, {recursive:true, force:true});
 await mkdir(path.join(out, 'pages'), {recursive:true});
 await cp(path.join(root, 'assets'), path.join(out, 'assets'), {recursive:true});
+await writeFile(path.join(out,'assets/js/main.js'), mainSource);
 await writeFile(path.join(out,'.nojekyll'), '');
 
 function shell(title, description, body, prefix = './', active = '') {
   return `<!doctype html>
-<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="${escape(description)}"><meta name="theme-color" content="#173947"><title>${escape(title)} | CS Learning Hub</title><link rel="icon" href="${prefix}assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="${prefix}assets/css/style.css?v=${styleVersion}"><script type="module" src="${prefix}assets/js/main.js"></script></head>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="${escape(description)}"><meta name="theme-color" content="#173947"><title>${escape(title)} | CS Learning Hub</title><link rel="icon" href="${prefix}assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="${prefix}assets/css/style.css?v=${styleVersion}"><script type="module" src="${prefix}assets/js/main.js?v=${mainVersion}"></script></head>
 <body><a class="skip" href="#main">跳到主要內容</a><header class="site-header"><div class="header-inner"><a class="brand" href="${prefix}index.html"><span class="brand-mark" aria-hidden="true">cs<span>_</span></span><span>CS Learning Hub<small>我的資工學習知識庫</small></span></a><nav aria-label="主要導覽"><a href="${prefix}index.html" ${active==='home'?'aria-current="page"':''}>知識首頁</a><a href="${prefix}index.html#topics">探索主題 <span aria-hidden="true">↗</span></a></nav></div></header>${body}<footer class="site-footer"><div><a class="footer-brand" href="${prefix}index.html">CS Learning Hub<span aria-hidden="true">_</span></a><p>理解一個概念，連結更多可能。</p></div><p>繁體中文資工筆記 · 以規則延續學習<br><span>生成式 AI 第九週作業 / 2026</span></p></footer></body></html>`;
 }
 const card = a => `<a class="topic-card" href="pages/${a.slug}.html" data-topic="${escape(a.category)}" data-search="${escape([a.title,a.category,a.summary,...a.keywords,...a.sections.map(s=>s.html.replace(/<[^>]*>/g,' '))].join(' ').toLowerCase())}"><div class="card-top"><span class="tag">${escape(a.category)}</span><span class="card-number">/${a.number}</span></div><div class="card-glyph" aria-hidden="true">${escape(a.glyph || '◇')}</div><h3>${escape(a.title)}</h3><p>${escape(a.summary)}</p><div class="card-bottom"><span>${escape(a.level)} · 約 ${a.minutes} 分鐘</span><span class="read-link">開始閱讀 ↗</span></div></a>`;

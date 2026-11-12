@@ -1,6 +1,6 @@
 import { matchesArticle } from './search.mjs';
 
-const input = document.querySelector('#search');
+const input = document.querySelector('input#search');
 if (input) {
   const cards = [...document.querySelectorAll('.topic-card')];
   const buttons = [...document.querySelectorAll('[data-filter]')];

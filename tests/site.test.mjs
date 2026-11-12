@@ -54,6 +54,15 @@ test('search handles whitespace, mixed case, multiple terms, categories and empt
   assert.ok(!matchesArticle(a,'stack','離散數學'));
   assert.ok(!matchesArticle(a,'不存在','全部'));
 });
+test('BST section named search does not initialize the homepage search interface',async()=>{
+  const html=await readFile(path.join(root,'dist/pages/bst.html'),'utf8');
+  assert.match(html,/<section[^>]*id="search"/);
+  const previous=globalThis.document;
+  const section={tagName:'SECTION'};
+  globalThis.document={querySelector(selector){return selector==='#search'||selector==='section#search'?section:null;}};
+  try { await import('../assets/js/main.js?bst-regression'); }
+  finally { if(previous===undefined)delete globalThis.document;else globalThis.document=previous; }
+});
 test('Stack example: LIFO and empty boundaries',()=>{
   const source=articles.find(a=>a.slug==='stack').sections.find(s=>s.id==='implementation').code;
   const result=vm.runInNewContext(`${source}\nconst s = new Stack(); const empty = s.pop(); s.push(1); s.push(2); [empty, s.peek(), s.pop(), s.pop(), s.size, s.peek()];`,{console:{log(){}}});
