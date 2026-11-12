@@ -1,6 +1,6 @@
 # CS Learning Hub
 
-專案 Repository：[juncheng0909/w9](https://github.com/juncheng0909/w9)。預定正式網址：[CS Learning Hub](https://juncheng0909.github.io/w9/)（部署狀態見 `docs/VERIFICATION.md`）。
+專案 Repository：[juncheng0909/w9](https://github.com/juncheng0909/w9)。正式網站：[CS Learning Hub](https://juncheng0909.github.io/w9/)。已完成 GitHub Actions 部署與瀏覽器驗收，詳見 `docs/VERIFICATION.md`。
 
 以繁體中文整理資工核心概念的靜態學習網站，也是生成式 AI 第九週「建立自己的 AGENTS.md」作業。重點是以規則與共用版型持續擴充知識內容。
 
