@@ -22,7 +22,7 @@ test('all pages have accessible structure, descriptions and working local links 
       if (/^(https?:|mailto:|data:)/.test(url)) continue;
       assert.ok(!url.startsWith('/'),`absolute path breaks repository hosting: ${url}`);
       const [relative,fragment]=url.split('#');
-      const target=relative?path.resolve(path.dirname(filename),relative):filename;
+      const target=relative?path.resolve(path.dirname(filename),relative.split('?')[0]):filename;
       assert.ok((await stat(target)).isFile(),`${page} → ${url}`);
       if(fragment){const content=await readFile(target,'utf8');assert.ok(content.includes(`id="${fragment}"`),`${page}: missing ${fragment}`);}
     }
